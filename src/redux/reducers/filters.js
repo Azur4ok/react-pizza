@@ -6,7 +6,7 @@ const initialState = {
   },
 };
 
-export const filtersReducer = (state = initialState, action) => {
+const filtersReducer = (state = initialState, action) => {
   switch (action.type) {
     case "SET_CATEGORY":
       return {
@@ -22,3 +22,5 @@ export const filtersReducer = (state = initialState, action) => {
       return state;
   }
 };
+
+export default filtersReducer;

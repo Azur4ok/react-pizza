@@ -3,8 +3,9 @@ import { Categories, SortPopup, PizzaBlock, PizzaLoadingBlock } from '../Compone
 import { useSelector, useDispatch } from 'react-redux';
 import { setCategory, setSortBy } from '../redux/actions/filters';
 import { fetchPizzas } from '../redux/actions/pizzas';
+import { addPizzaCart } from '../redux/actions/cart';
 
-const categoryNames = [ 'Мясные', 'Вегетарианская', 'Гриль', 'Острые', 'Закрытые'];
+const categoryNames = ['Мясные', 'Вегетарианская', 'Гриль', 'Острые', 'Закрытые'];
 const sortItems = [
   { name: 'популярности', type: 'popular', order: 'desc' },
   { name: 'цене', type: 'price', order: 'desc' },
@@ -13,10 +14,27 @@ const sortItems = [
 
 export const Main = () => {
   const dispatch = useDispatch();
-  const items = useSelector(({ pizzas }) => pizzas.items);
-  const isLoaded = useSelector(({ pizzas }) => pizzas.isLoaded);
+  const { items, isLoaded } = useSelector(({ pizzas }) => {
+    return {
+      items: pizzas.items,
+      isLoaded: pizzas.isLoaded,
+    };
+  });
+  const cartItems = useSelector(({ cart }) => cart.items);
   const { category, sortBy } = useSelector(({ filters }) => filters);
-  const renderPizzas = items.map((item, index) => <PizzaBlock key={item.id} {...item} />);
+
+  const handlePizzaToCart = (obj) => {
+    dispatch(addPizzaCart(obj));
+  };
+
+  const renderPizzas = items.map((item) => (
+    <PizzaBlock
+      onClickAddPizza={handlePizzaToCart}
+      addedCount={cartItems[item.id] && cartItems[item.id].items.length}
+      key={item.id}
+      {...item}
+    />
+  ));
 
   React.useEffect(() => {
     dispatch(fetchPizzas(category, sortBy));
@@ -33,7 +51,11 @@ export const Main = () => {
           onClickCategory={onSelectCategory}
           items={categoryNames}
         />
-        <SortPopup activeSortType={sortBy.type} items={sortItems} onClickSortType={onSelectSortType} />
+        <SortPopup
+          activeSortType={sortBy.type}
+          items={sortItems}
+          onClickSortType={onSelectSortType}
+        />
       </div>
       <h2 className="content__title">Все пиццы</h2>
       <div className="content__items">

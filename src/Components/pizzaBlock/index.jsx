@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import Button from './../Button';
 
-const PizzaBlock = ({ name, price, imageUrl, sizes, types }) => {
+const PizzaBlock = ({ id, name, price, imageUrl, sizes, types, onClickAddPizza, addedCount }) => {
+  
   const typeNames = ['тонкое', 'традиционное'];
   const avaiableSizes = [26, 30, 40];
+
   const [selectedType, setSelectedType] = useState(types[0]);
-  const [selectedSize, setSelectedSize] = useState(sizes[0]);
-console.log(sizes[0], types[0]);
+  const [selectedSize, setSelectedSize] = useState(0);
   const handleSelectTypeClick = (index) => setSelectedType(index);
+
   const typesOfPizza =
     typeNames &&
     typeNames.map((element, index) => (
@@ -22,6 +25,17 @@ console.log(sizes[0], types[0]);
         {element}
       </li>
     ));
+
+  const onAddPizza = () => {
+    const obj = {
+      id,
+      name,
+      price,
+      size: avaiableSizes[selectedSize],
+      type: typeNames[selectedType],
+    };
+    onClickAddPizza(obj);
+  };
 
   const handleSelectSizeClick = (index) => setSelectedSize(index);
   const sizesOfpizza =
@@ -48,7 +62,7 @@ console.log(sizes[0], types[0]);
       </div>
       <div className="pizza-block__bottom">
         <div className="pizza-block__price">от {price} ₽</div>
-        <div className="button button--outline button--add">
+        <Button onClick={onAddPizza} className="button--add" outline>
           <svg
             width="12"
             height="12"
@@ -61,8 +75,8 @@ console.log(sizes[0], types[0]);
             />
           </svg>
           <span>Добавить</span>
-          <i>2</i>
-        </div>
+          {addedCount && <i>{addedCount}</i>}
+        </Button>
       </div>
     </div>
   );
@@ -74,6 +88,8 @@ PizzaBlock.propTypes = {
   imageUrl: PropTypes.string,
   sizes: PropTypes.arrayOf(PropTypes.number),
   types: PropTypes.arrayOf(PropTypes.number),
+  onClickAddPizza: PropTypes.func.isRequired,
+  addedCount: PropTypes.number,
 };
 
 PizzaBlock.defaultProps = {
